@@ -1,0 +1,1 @@
+#In the future, i will implement audio detection here for a speaking character or something like that.
