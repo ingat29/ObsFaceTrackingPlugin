@@ -51,3 +51,41 @@ class GestureLogic:
             return "SMILE"
         else:
             return "NEUTRAL"
+
+    def detect_hand_gesture(self, hand_data):
+        if not hand_data or not hand_data.multi_hand_landmarks:
+            return None
+
+        hand = hand_data.multi_hand_landmarks[0].landmark
+
+            # # Verify if the thumb is up 
+            # thumb_is_up = hand[4].y < hand[3].y and hand[4].y < hand[2].y # hand[3] and hand[2] are joint trackers
+
+            # # Verify if the other four fingers are folded into a fist 
+            # # (Comparing the fingertip Y to the knuckle Y)
+            # index_folded = hand[8].y > hand[6].y
+            # middle_folded = hand[12].y > hand[10].y
+            # ring_folded = hand[16].y > hand[14].y
+            # pinky_folded = hand[20].y > hand[18].y
+            # ^^^^^^^^^^^^^^^^^ Prone to false positives, because sometimes the hand can be tilted, and the Y coordinate may not be a good indicator of whether the finger is folded or not
+
+        # Helper function: distance from the wrist (Point 0) to any given point
+        def dist_to_wrist(point_index):
+            return self.calculate_distance(hand[0], hand[point_index])
+
+        # Verify the thumb is extended? 
+        # (Tip [4] is further from the wrist than the middle joint [3])
+        thumb_extended = dist_to_wrist(4) > dist_to_wrist(3)
+
+        # Verify that the fingers are folded into a fist? 
+        # (Tips [8, 12, 16, 20] are closer to the wrist than the middle knuckles [6, 10, 14, 18])
+        index_folded = dist_to_wrist(8) < dist_to_wrist(6)
+        middle_folded = dist_to_wrist(12) < dist_to_wrist(10)
+        ring_folded = dist_to_wrist(16) < dist_to_wrist(14)
+        pinky_folded = dist_to_wrist(20) < dist_to_wrist(18)
+
+        # If all conditions are met, it's a thumbs up!
+        if thumb_extended and index_folded and middle_folded and ring_folded and pinky_folded:
+            return "THUMBS_UP"
+            
+        return "HAND_TRACKED_BUT_NO_GESTURE"
