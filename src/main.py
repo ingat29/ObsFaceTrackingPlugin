@@ -7,7 +7,7 @@ def main():
     print("Initializing Vision Engine...")
     tracker = VisionTracker()
     logic = GestureLogic()
-    obs_link = OBSController(password="password123")
+    obs_link = OBSController(host='localhost', password="06ShI9A86ojslosm")
 
     print("Engine running. Press 'q' to quit.")
     
@@ -26,10 +26,10 @@ def main():
         
         # State machine - priority to hand gestures, then face expressions
         final_state = "NEUTRAL"
-        if hand_gesture == "THUMBS_UP":
-            final_state = "THUMBS_UP"
+        if hand_gesture is not None and hand_gesture != "HAND_TRACKED_BUT_NO_GESTURE":
+            final_state = hand_gesture
         else:
-            final_state =face_expression
+            final_state = face_expression
 
         if final_state != current_state:
             print(f"State changed to: {final_state}")

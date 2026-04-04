@@ -29,13 +29,14 @@ class VisionTracker:
         result_hands = self.hands.process(rgb_frame)
         result_face = self.face_mesh.process(rgb_frame)
 
-        if result_hands.multi_hand_landmarks:
-            for hand_landmarks in result_hands.multi_hand_landmarks:
-                self.mp_draw.draw_landmarks(frame, hand_landmarks, self.mp_hands.HAND_CONNECTIONS) 
+        #vvvvvvvvvvvvvvvvv Uncomment if you want to see the tracking points on the video feed for debugging
+        # if result_hands.multi_hand_landmarks:
+        #     for hand_landmarks in result_hands.multi_hand_landmarks:
+        #         self.mp_draw.draw_landmarks(frame, hand_landmarks, self.mp_hands.HAND_CONNECTIONS) 
 
-        if result_face.multi_face_landmarks:
-            for face_landmarks in result_face.multi_face_landmarks:
-                self.mp_draw.draw_landmarks(frame, face_landmarks, self.mp_face_mesh.FACEMESH_TESSELATION)
+        # if result_face.multi_face_landmarks:
+        #     for face_landmarks in result_face.multi_face_landmarks:
+        #         self.mp_draw.draw_landmarks(frame, face_landmarks, self.mp_face_mesh.FACEMESH_TESSELATION)
 
         return True, frame, result_hands, result_face
 

@@ -53,8 +53,36 @@ class GestureLogic:
             return "NEUTRAL"
 
     def detect_hand_gesture(self, hand_data):
-        if not hand_data or not hand_data.multi_hand_landmarks:
+        landmarks = hand_data.multi_hand_landmarks
+        FINGERTIPS_THRESHOLD = 0.08
+        WRIST_THRESHOLD = 0.15
+        if not hand_data or not landmarks:
             return None
+
+        #TWO-HAND GESTURE DETECTION
+
+        if len(landmarks) == 2:
+            hand1 = landmarks[0].landmark
+            hand2 = landmarks[1].landmark
+            
+            # 1. Check if fingertips are touching 
+            thumb_dist = self.calculate_distance(hand1[4], hand2[4])
+            index_dist = self.calculate_distance(hand1[8], hand2[8])
+            middle_dist = self.calculate_distance(hand1[12], hand2[12])
+            ring_dist = self.calculate_distance(hand1[16], hand2[16])
+            pinky_dist = self.calculate_distance(hand1[20], hand2[20])
+            
+            # 2. Check if wrists are far apart (forming the triangle base)
+            wrist_dist = self.calculate_distance(hand1[0], hand2[0])
+
+            # print(f"Thumb tip distance: {thumb_dist:.4f}, Index tip distance: {index_dist:.4f}, Middle tip distance: {middle_dist:.4f}, Ring tip distance: {ring_dist:.4f}, Pinky tip distance: {pinky_dist:.4f}, Wrist distance: {wrist_dist:.4f}")
+            
+            # If tips are close (< 0.08) AND wrists are separated (> 0.15)
+            if (thumb_dist < FINGERTIPS_THRESHOLD and index_dist < FINGERTIPS_THRESHOLD and 
+                middle_dist < FINGERTIPS_THRESHOLD and ring_dist < FINGERTIPS_THRESHOLD and pinky_dist < FINGERTIPS_THRESHOLD and wrist_dist > WRIST_THRESHOLD):
+                return "STEEPLE"
+
+        #SINGLE HAND GESTURE DETECTION
 
         hand = hand_data.multi_hand_landmarks[0].landmark
 
@@ -84,8 +112,11 @@ class GestureLogic:
         ring_folded = dist_to_wrist(16) < dist_to_wrist(14)
         pinky_folded = dist_to_wrist(20) < dist_to_wrist(18)
 
-        # If all conditions are met, it's a thumbs up!
-        if thumb_extended and index_folded and middle_folded and ring_folded and pinky_folded:
-            return "THUMBS_UP"
-            
+        is_thumb_gesture = thumb_extended and index_folded and middle_folded and ring_folded and pinky_folded
+
+        if is_thumb_gesture:  
+            if hand[4].y < hand[0].y: 
+                return "THUMBS_UP"  
+            else:
+                return "THUMBS_DOWN"          
         return "HAND_TRACKED_BUT_NO_GESTURE"

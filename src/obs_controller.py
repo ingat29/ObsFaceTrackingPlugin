@@ -2,7 +2,7 @@ import os
 import obsws_python as obs
 
 class OBSController:
-    def __init__(self, host='localhost', port=4455, password='password123'): # remember to replace this with template 
+    def __init__(self, host='localhost', port=4455, password='06ShI9A86ojslosm'): 
         print("Connecting to OBS WebSocket...")
         try:
             self.client = obs.ReqClient(host=host, port=port, password=password)
@@ -25,6 +25,8 @@ class OBSController:
             "SMILE": os.path.join(assets_dir, "Smile.png"),
             "MOUTH_OPEN": os.path.join(assets_dir, "Mouth Open.png"),
             "THUMBS_UP": os.path.join(assets_dir, "Thumbs Up.png"),
+            "STEEPLE": os.path.join(assets_dir, "Steeple.png"),
+            "THUMBS_DOWN": os.path.join(assets_dir, "Thumbs Down.png"),
             # Fallback for when tracking hands but no gesture is made
             "HAND_TRACKED_BUT_NO_GESTURE": os.path.join(assets_dir, "Neutral.png") 
         }
